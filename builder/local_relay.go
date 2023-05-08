@@ -105,6 +105,11 @@ func (r *LocalRelay) SubmitBlockCapella(msg *capella.SubmitBlockRequest, _ Valid
 	return r.submitBlockCapella(msg)
 }
 
+func (r *LocalRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
+	log.Info("local relay not supported for primev", "block", msg.ExecutionPayload.BlockHash.String())
+	return nil
+}
+
 // TODO: local relay support for capella
 func (r *LocalRelay) submitBlockCapella(msg *capella.SubmitBlockRequest) error {
 	return nil

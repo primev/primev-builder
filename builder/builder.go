@@ -40,6 +40,7 @@ type ValidatorData struct {
 type IRelay interface {
 	SubmitBlock(msg *boostTypes.BuilderSubmitBlockRequest, vd ValidatorData) error
 	SubmitBlockCapella(msg *capellaapi.SubmitBlockRequest, vd ValidatorData) error
+	SubmitBlockPrimev(msg *capellaapi.SubmitBlockRequest) error
 	GetValidatorForSlot(nextSlot uint64) (ValidatorData, error)
 	Start() error
 	Stop()

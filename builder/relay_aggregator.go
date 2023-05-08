@@ -61,6 +61,12 @@ func (r *RemoteRelayAggregator) SubmitBlock(msg *boostTypes.BuilderSubmitBlockRe
 	return nil
 }
 
+func (r *RemoteRelayAggregator) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
+	log.Warn("SubmitBlockPrimev should not be called for RemoteRelayAggregator implemenetation of IRelay.")
+
+	return nil
+}
+
 func (r *RemoteRelayAggregator) SubmitBlockCapella(msg *capella.SubmitBlockRequest, registration ValidatorData) error {
 	r.registrationsCacheLock.RLock()
 	defer r.registrationsCacheLock.RUnlock()

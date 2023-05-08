@@ -168,6 +168,22 @@ func (r *RemoteRelay) SubmitBlockCapella(msg *capella.SubmitBlockRequest, _ Vali
 	return nil
 }
 
+func (r *RemoteRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
+	log.Info("submitting block to primev module", "endpoint", r.primevEndpoint)
+	code, err := server.SendHTTPRequest(context.TODO(), *http.DefaultClient, http.MethodPost, r.primevEndpoint+"/primev/v1/builder/blocks", msg, nil)
+	if err != nil {
+		return fmt.Errorf("error sending http request to relay %s. err: %w", r.primevEndpoint, err)
+	}
+	if code > 299 {
+		return fmt.Errorf("non-ok response code %d from relay %s", code, r.primevEndpoint)
+	}
+
+	// Note: Primev does not support submitting to local endpoint.
+	// If this is something you would like us to support, please reach out to us.
+
+	return nil
+}
+
 func (r *RemoteRelay) getSlotValidatorMapFromRelay() (map[uint64]ValidatorData, error) {
 	var dst GetValidatorRelayResponse
 	code, err := server.SendHTTPRequest(context.TODO(), *http.DefaultClient, http.MethodGet, r.endpoint+"/relay/v1/builder/validators", nil, &dst)
