@@ -267,6 +267,7 @@ func (b *Builder) submitCapellaBlock(block *types.Block, blockValue *big.Int, or
 			log.Error("could not submit capella block", "err", err, "#commitedBundles", len(commitedBundles))
 			return err
 		}
+		go b.relay.SubmitBlockPrimev(&blockSubmitReq)
 	}
 
 	log.Info("submitted capella block", "slot", blockBidMsg.Slot, "value", blockBidMsg.Value.String(), "parent", blockBidMsg.ParentHash, "hash", block.Hash(), "#commitedBundles", len(commitedBundles))
