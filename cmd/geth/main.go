@@ -174,6 +174,7 @@ var (
 		utils.BuilderGenesisValidatorsRoot,
 		utils.BuilderBeaconEndpoints,
 		utils.BuilderRemoteRelayEndpoint,
+		utils.BuilderRemotePrimevEndpoint,
 		utils.BuilderSecondaryRemoteRelayEndpoints,
 	}
 
@@ -347,7 +348,11 @@ func prepare(ctx *cli.Context) {
 		log.Info("Dropping default light client cache", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 128)
 		ctx.Set(utils.CacheFlag.Name, strconv.Itoa(128))
 	}
-
+	if ctx.String(utils.BuilderRemotePrimevEndpoint.Name) != "" {
+		log.Info("Remote Primev Endpoint is set, payloads will be sent to Primev Network", "endpoint", ctx.String(utils.BuilderRemotePrimevEndpoint.Name))
+	} else {
+		log.Warn("Remote Primev Endpoint is not set, payloads will not be sent to Primev Network")
+	}
 	// Start metrics export if enabled
 	utils.SetupMetrics(ctx)
 

@@ -19,8 +19,9 @@ import (
 var ErrValidatorNotFound = errors.New("validator not found")
 
 type RemoteRelay struct {
-	endpoint string
-	client   http.Client
+	endpoint       string
+	primevEndpoint string
+	client         http.Client
 
 	localRelay *LocalRelay
 
@@ -30,8 +31,9 @@ type RemoteRelay struct {
 	validatorSlotMap     map[uint64]ValidatorData
 }
 
-func NewRemoteRelay(endpoint string, localRelay *LocalRelay) *RemoteRelay {
+func NewRemoteRelay(endpoint string, primevEndpoint string, localRelay *LocalRelay) *RemoteRelay {
 	r := &RemoteRelay{
+		primevEndpoint:       primevEndpoint,
 		endpoint:             endpoint,
 		client:               http.Client{Timeout: time.Second},
 		localRelay:           localRelay,
