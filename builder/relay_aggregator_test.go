@@ -68,6 +68,11 @@ func (r *testRelay) SubmitBlockCapella(msg *capella.SubmitBlockRequest, registra
 	return r.sbError
 }
 
+func (r *testRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
+	_ = msg
+	return nil
+}
+
 func (r *testRelay) GetValidatorForSlot(nextSlot uint64) (ValidatorData, error) {
 	r.requestedSlot = nextSlot
 	return r.gvsVd, r.gvsErr
