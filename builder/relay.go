@@ -170,7 +170,7 @@ func (r *RemoteRelay) SubmitBlockCapella(msg *capella.SubmitBlockRequest, _ Vali
 
 func (r *RemoteRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
 	log.Info("submitting block to primev module", "endpoint", r.primevEndpoint)
-	code, err := server.SendHTTPRequest(context.TODO(), *http.DefaultClient, http.MethodPost, r.primevEndpoint+"/primev/v1/builder/blocks", msg, nil)
+	code, err := server.SendHTTPRequest(context.TODO(), *http.DefaultClient, http.MethodPost, r.primevEndpoint, msg, nil)
 	if err != nil {
 		log.Error("error sending http request to primev module", "primevEndpoint", r.primevEndpoint, "err", err)
 	} else if code > 299 {
