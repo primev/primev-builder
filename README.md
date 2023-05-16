@@ -1,8 +1,10 @@
 [geth readme](README.original.md)
 
-# Flashbots Block Builder
+# Primev Block Builder
 
-This project implements the Flashbots block builder, based on go-ethereum (geth).
+This project implements the Primev block builder, based on Flashbots' fork of go-ethereum (geth). This version accepts a new cli flag for a Primev endpoint. When a block is built it will send it to the configured address.
+
+Big shoutout to flashbots for paving the way of PBS/mev research and setting standards that others can openly build on. Below info follows flashbots' open source builder docs:
 
 See also: https://docs.flashbots.net/flashbots-mev-boost/block-builders
 
