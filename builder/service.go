@@ -146,7 +146,7 @@ func Register(stack *node.Node, backend *eth.Ethereum, cfg *Config) error {
 
 	var relay IRelay
 	if cfg.RemoteRelayEndpoint != "" {
-		relay = NewRemoteRelay(cfg.RemoteRelayEndpoint, cfg.RemotePrimevEndpoint, localRelay)
+		relay = NewRemoteRelay(cfg.RemoteRelayEndpoint, cfg.RemotePrimevEndpoint, cfg.PrimevToken, localRelay)
 	} else if localRelay != nil {
 		relay = localRelay
 	} else {
@@ -156,7 +156,7 @@ func Register(stack *node.Node, backend *eth.Ethereum, cfg *Config) error {
 	if len(cfg.SecondaryRemoteRelayEndpoints) > 0 && !(len(cfg.SecondaryRemoteRelayEndpoints) == 1 && cfg.SecondaryRemoteRelayEndpoints[0] == "") {
 		secondaryRelays := make([]IRelay, len(cfg.SecondaryRemoteRelayEndpoints))
 		for i, endpoint := range cfg.SecondaryRemoteRelayEndpoints {
-			secondaryRelays[i] = NewRemoteRelay(endpoint, cfg.RemotePrimevEndpoint, nil)
+			secondaryRelays[i] = NewRemoteRelay(endpoint, cfg.RemotePrimevEndpoint, cfg.PrimevToken, nil)
 		}
 		relay = NewRemoteRelayAggregator(relay, secondaryRelays)
 	}

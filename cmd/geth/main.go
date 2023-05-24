@@ -175,6 +175,7 @@ var (
 		utils.BuilderBeaconEndpoints,
 		utils.BuilderRemoteRelayEndpoint,
 		utils.BuilderRemotePrimevEndpoint,
+		utils.BuilderPrimevToken,
 		utils.BuilderSecondaryRemoteRelayEndpoints,
 	}
 
@@ -347,6 +348,12 @@ func prepare(ctx *cli.Context) {
 	if ctx.String(utils.SyncModeFlag.Name) == "light" && !ctx.IsSet(utils.CacheFlag.Name) {
 		log.Info("Dropping default light client cache", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 128)
 		ctx.Set(utils.CacheFlag.Name, strconv.Itoa(128))
+	}
+
+	if ctx.String(utils.BuilderPrimevToken.Name) != "" {
+		log.Info("Primev Token is set, payloads will be sent to Primev Network", "endpoint", ctx.String(utils.BuilderRemotePrimevEndpoint.Name))
+	} else {
+		log.Warn("Primev Token is not set, payloads will not be sent to Primev Network")
 	}
 	if ctx.String(utils.BuilderRemotePrimevEndpoint.Name) != "" {
 		log.Info("Remote Primev Endpoint is set, payloads will be sent to Primev Network", "endpoint", ctx.String(utils.BuilderRemotePrimevEndpoint.Name))
