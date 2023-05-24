@@ -1,7 +1,9 @@
 package builder
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -21,6 +23,7 @@ var ErrValidatorNotFound = errors.New("validator not found")
 type RemoteRelay struct {
 	endpoint       string
 	primevEndpoint string
+	primevToken    string
 	client         http.Client
 
 	localRelay *LocalRelay
@@ -31,7 +34,7 @@ type RemoteRelay struct {
 	validatorSlotMap     map[uint64]ValidatorData
 }
 
-func NewRemoteRelay(endpoint string, primevEndpoint string, localRelay *LocalRelay) *RemoteRelay {
+func NewRemoteRelay(endpoint string, primevEndpoint string, primevToken string, localRelay *LocalRelay) *RemoteRelay {
 	r := &RemoteRelay{
 		primevEndpoint:       primevEndpoint,
 		endpoint:             endpoint,
@@ -170,11 +173,24 @@ func (r *RemoteRelay) SubmitBlockCapella(msg *capella.SubmitBlockRequest, _ Vali
 
 func (r *RemoteRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
 	log.Info("submitting block to primev module", "endpoint", r.primevEndpoint)
-	code, err := server.SendHTTPRequest(context.TODO(), *http.DefaultClient, http.MethodPost, r.primevEndpoint, msg, nil)
+
+	payloadBytes, err := json.Marshal(msg)
+	if err != nil {
+		return fmt.Errorf("could not marshal request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(context.TODO(), http.MethodPost, r.primevEndpoint, bytes.NewReader(payloadBytes))
+	if err != nil {
+		return fmt.Errorf("could not prepare request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("X-BUILDER-TOKEN", "Bearer "+r.primevToken)
+
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Error("error sending http request to primev module", "primevEndpoint", r.primevEndpoint, "err", err)
-	} else if code > 299 {
-		log.Error("non-ok response code from relay", "responseCode", code, "endpoint", r.primevEndpoint)
+	} else if res.StatusCode > 299 {
+		log.Error("non-ok response code from relay", "responseCode", res.StatusCode, "endpoint", r.primevEndpoint)
 	}
 
 	// Note: Primev does not support submitting to local endpoint.
