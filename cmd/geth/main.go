@@ -351,7 +351,7 @@ func prepare(ctx *cli.Context) {
 	}
 
 	if ctx.String(utils.BuilderPrimevToken.Name) != "" {
-		log.Info("Primev Token is set, payloads will be sent to Primev Network", "endpoint", ctx.String(utils.BuilderRemotePrimevEndpoint.Name))
+		log.Info("Primev Token is set, payloads will be sent to Primev Network")
 	} else {
 		log.Warn("Primev Token is not set, payloads will not be sent to Primev Network")
 	}
