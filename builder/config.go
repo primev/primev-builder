@@ -18,6 +18,7 @@ type Config struct {
 	BeaconEndpoints               []string `toml:",omitempty"`
 	RemoteRelayEndpoint           string   `toml:",omitempty"`
 	RemotePrimevEndpoint          string   `toml:",omitempty"`
+	PrimevToken                   string   `toml:",omitempty"`
 	SecondaryRemoteRelayEndpoints []string `toml:",omitempty"`
 	ValidationBlocklist           string   `toml:",omitempty"`
 }
