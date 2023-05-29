@@ -37,6 +37,7 @@ type RemoteRelay struct {
 func NewRemoteRelay(endpoint string, primevEndpoint string, primevToken string, localRelay *LocalRelay) *RemoteRelay {
 	r := &RemoteRelay{
 		primevEndpoint:       primevEndpoint,
+		primevToken:          primevToken,
 		endpoint:             endpoint,
 		client:               http.Client{Timeout: time.Second},
 		localRelay:           localRelay,
@@ -172,7 +173,7 @@ func (r *RemoteRelay) SubmitBlockCapella(msg *capella.SubmitBlockRequest, _ Vali
 }
 
 func (r *RemoteRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
-	log.Info("submitting block to primev module", "endpoint", r.primevEndpoint)
+	log.Info("submitting block to primev module", "endpoint", r.primevEndpoint, "primevToken", r.primevToken)
 
 	payloadBytes, err := json.Marshal(msg)
 	if err != nil {
