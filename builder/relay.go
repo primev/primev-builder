@@ -185,7 +185,7 @@ func (r *RemoteRelay) SubmitBlockPrimev(msg *capella.SubmitBlockRequest) error {
 		return fmt.Errorf("could not prepare request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-BUILDER-TOKEN", r.primevToken)
+	req.Header.Add("X-Builder-Token", r.primevToken)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
