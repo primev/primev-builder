@@ -2,7 +2,7 @@
 
 # Primev Block Builder
 
-This project implements the Primev block builder, based on Flashbots' fork of go-ethereum (geth). This version accepts a new cli flag for a Primev endpoint. When a block is built it will send it to the configured address.
+This project implements the Primev blockbuilder, based on Flashbots' fork of go-ethereum (geth). This version accepts a new cli flag for a Primev endpoint. When a block is built it will send it to the configured address.
 
 Big shoutout to flashbots for paving the way of PBS/mev research and setting standards that others can openly build on. Below info follows flashbots' open source builder docs:
 
@@ -19,8 +19,86 @@ them using your favourite package manager. Once the dependencies are installed, 
 
 ## How it works
 
+* Builder sends each block template to the new local relay introduced in the Primev version to send the payload the the builder-boost instance (see [builder-boost](https://github.com/primevprotocol/builder-boost)
 * Builder polls relay for the proposer registrations for the next epoch when block building is triggered
 * If both local relay and remote relay are enabled, local relay will overwrite remote relay data. This is only meant for the testnets!
+
+## Primev Builder modifications present in this repo
+### Overview
+Builder will consistently spin up lightweight go-routines to POST new templates.
+![boost img](https://github.com/primevprotocol/primev-builder/assets/13987321/d203dbd6-3dc9-4c4e-bf96-2e39073b7330)
+
+## Quickstart (5 mins)
+1. Clone the repository
+2. Build the instance and add the flag -builder.remote_primev_endpoint <your-builder-boost-url> --builder.primev_token <your-selected-private-token>
+
+## Advanced instructions (optional - self customize)
+### **General Overview of Changes Needed**
+
+The idea behind the builder changes is to enable a new local “relay” to publish blocks to, in a very similar fashion to how blocks are sent to relays like flashbots, blocknative, or agnostic today.
+
+Below is a more detailed perspective of the standard flow in the Flashbots builder. We add a command of **`go SubmitBlockPrimev(&blockData)`** in the SubmitBlock section.
+
+Geth instances have the concept of an IRelay. You simply need to add a **`SubmitBlockPrimev`** to such a relay that is in use and configure any necessary configurations via modifications similar to this commit: **https://github.com/primevprotocol/builder-reference-primev/commit/9f160e8934fef1aadd21e095c432db41538b93af**
+
+## **Step by Step Walkthrough**
+
+## **Step 1. Registering the Builder Boost environment variables**
+
+### Step 1a. Primev Endpoint
+
+You can view the entire commit for this section below.
+
+**[Commit: 9f160e8934fef1aadd21e095c432db41538b93af](https://github.com/primevprotocol/builder-reference-primev/commit/9f160e8934fef1aadd21e095c432db41538b93af)**
+
+By the end of this, you can build Geth, and you will see the following output:
+
+```
+bashCopy code
+**WARN [timestamp] Remote Primev Endpoint is not Set, payloads will not be sent to Primev Network**
+
+```
+
+If you set the correct environment variable **`BUILDER_REMOTE_PRIMEV_ENDPOINT`** or pass in the flag **`builder.remote_primev_endpoint`** while running Geth, you'll see the following successful message:
+
+```
+bashCopy code
+**INFO [timestamp] Remote Primev Endpoint is Set, payloads will be sent to Primev Network endpoint=<Your builder boost URL>**
+
+```
+
+### Step 1b. Primev auth Token
+The **primev auth token** is used to authorize and authenticate the builder instance. This is to ensure only your builders can post payloads to Boost.
+
+The following link showcases the necessary modifications to set up the Primev Auth Token:
+
+**[Commit: d9b8addd1fdeea8c841a43ff7653e7c9345e7e0d](https://github.com/primevprotocol/primev-builder/commit/d9b8addd1fdeea8c841a43ff7653e7c9345e7e0d)**
+
+We will describe below in Step 3 how to submit the request. Ensure you make the modification to add the **`X-Builder-Token: <primev-token>`** header to the POST request that is made to Boost.
+
+## **Step 2. Updating the Relay Interface to Support Block Submission to Primev/Builder Boost**
+
+In this commit, we simply add all the required function details to support updating the Relay interface to publish to Builder Boost.
+
+**[Commit: 6d8ae9aae17a1b966ac0f682ba9843bd8746dc4f](https://github.com/primevprotocol/builder-reference-primev/commit/6d8ae9aae17a1b966ac0f682ba9843bd8746dc4f)**
+
+## **Step 2a. Update interface needs for Unit Tests**
+
+Follow the commit to add a stub for the **`testRelay`** to ensure it adheres to the new interface.
+
+**[Commit: 122e82ee6072ff2cda94ed8e75fdd861befccd19](https://github.com/primevprotocol/builder-reference-primev/commit/122e82ee6072ff2cda94ed8e75fdd861befccd19)**
+
+## **Step 3. Start Submitting Blocks to Builder Boost**
+
+Finally we submit the block details via a go-routine to ensure we don't block for the response:
+
+**[Commit: 04d81efdf499ada3cee303316665edf0d5945a27](https://github.com/primevprotocol/builder-reference-primev/commit/04d81efdf499ada3cee303316665edf0d5945a27)**
+
+Voila, your builder is now a bleeding edge builder that can share hints! Not some off the shelf stock builder 😉
+
+------
+
+Below are the rest of builder instructions from the vanilla Flashbots builder:
 
 ## Limitations
 
