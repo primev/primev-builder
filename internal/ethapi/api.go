@@ -1787,6 +1787,12 @@ func (s *TransactionAPI) SendPrivateRawTransaction(ctx context.Context, input he
 	return SubmitTransaction(ctx, s.b, tx, true)
 }
 
+// BlockNumber returns the block number of the chain head.
+func (s *TransactionAPI) SendPreconfirmationBid(ctx context.Context, hash common.Hash) error {
+	log.Info("Recieved Preconfimration Bid", "transaction_hash", hash.Hex())
+	return nil
+}
+
 // Sign calculates an ECDSA signature for:
 // keccak256("\x19Ethereum Signed Message:\n" + len(message) + message).
 //
